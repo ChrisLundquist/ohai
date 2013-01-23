@@ -946,4 +946,71 @@ IP_ROUTE
     end
   end
 
+  describe "when OpenVZ wonky networking is enabled" do
+    describe "in RHEL 6" do
+      before do
+        @linux_ip_route = <<-IP_ROUTE
+169.254.0.0/16 dev venet0  scope link  metric 1002
+default dev venet0  scope link
+IP_ROUTE
+
+        @linux_ip_addr = <<-IP_ADDR
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    inet 127.0.0.1/8 scope host lo
+2: venet0: <BROADCAST,POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    inet 127.0.0.1/32 scope host venet0
+    inet 67.214.220.250/32 brd 67.214.220.250 scope global venet0:0
+IP_ADDR
+        prepare_data
+        do_stubs
+      end
+
+      it "completes the run" do
+        Ohai::Log.should_not_receive(:debug).with(/Plugin linux::network threw exception/)
+        @ohai._require_plugin("linux::network")
+        @ohai._require_plugin("network")
+        @ohai['network'].should_not be_nil
+      end
+
+      it "should set node.ipaddress" do
+        @ohai._require_plugin("linux::network")
+        @ohai._require_plugin("network")
+        @ohai['ipaddress'].should_not be_nil
+      end
+
+    end
+
+    describe "in ubuntu 12.04" do
+      before do
+        @linux_ip_route = <<-IP_ROUTE
+default dev venet0  scope link
+IP_ROUTE
+
+        @linux_ip_addr = <<-IP_ADDR
+1: lo: <LOOPBACK,UP,LOWER_UP> mtu 16436 qdisc noqueue state UNKNOWN
+    inet 127.0.0.1/8 scope host lo
+2: venet0: <BROADCAST,POINTOPOINT,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN
+    inet 67.214.219.172/32 scope global venet0:0
+    inet 192.2.10.1/32 scope global venet0:1337
+IP_ADDR
+        prepare_data
+        do_stubs
+      end
+
+      it "completes the run" do
+        Ohai::Log.should_not_receive(:debug).with(/Plugin linux::network threw exception/)
+        @ohai._require_plugin("linux::network")
+        @ohai._require_plugin("network")
+        @ohai['network'].should_not be_nil
+      end
+
+      it "should set node.ipaddress" do
+        @ohai._require_plugin("linux::network")
+        @ohai._require_plugin("network")
+        @ohai['ipaddress'].should_not be_nil
+      end
+
+    end
+
+  end
 end

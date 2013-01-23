@@ -826,4 +826,262 @@ describe Ohai::System, "Network Plugin" do
       end
     end
   end
+
+  describe "running OpenVZ" do
+    before(:each) do
+      @ohai = Ohai::System.new
+      @ohai.stub!(:require_plugin).twice.and_return(true)
+    end
+    let('openvz_data') do
+      openvz_data = {}
+      openvz_data['ubuntu'] = {
+  "default_gateway" =>  "0.0.0.0",
+  "default_inet6_gateway" =>  "::",
+  "default_interface" =>  "venet0",
+  "default_inet6_interface" =>  "venet0",
+  "interfaces" =>  {
+    "lo" =>  {
+      "addresses" =>  {
+        "::1" =>  {
+          "prefixlen" =>  "128",
+          "scope" =>  "Node",
+          "family" =>  "inet6"
+        },
+        "127.0.0.1" =>  {
+          "prefixlen" =>  "8",
+          "netmask" =>  "255.0.0.0",
+          "scope" =>  "Node",
+          "family" =>  "inet"
+        }
+      },
+      "encapsulation" =>  "Loopback",
+      "flags" =>  [
+        "LOOPBACK",
+        "UP",
+        "LOWER_UP"
+      ],
+      "mtu" =>  "16436",
+      "state" =>  "unknown"
+    },
+    "venet0:0" =>  {
+      "addresses" =>  {
+        "67.214.219.172" =>  {
+          "prefixlen" =>  "32",
+          "netmask" =>  "255.255.255.255",
+          "scope" =>  "Global",
+          "family" =>  "inet"
+        }
+      }
+    },
+    "venet0" =>  {
+      "number" =>  "0",
+      "addresses" =>  {
+        "2607:f700:1:ce:ed1f:c785:abdc:febd" =>  {
+          "prefixlen" =>  "128",
+          "scope" =>  "Global",
+          "family" =>  "inet6"
+        }
+      },
+      "routes" =>  [
+        {
+          "scope" =>  "link",
+          "family" =>  "inet",
+          "destination" =>  "default"
+        },
+        {
+          "family" =>  "inet6",
+          "proto" =>  "kernel",
+          "destination" =>  "2607:f700:1:ce:ed1f:c785:abdc:febd",
+          "metric" =>  "256"
+        },
+        {
+          "family" =>  "inet6",
+          "proto" =>  "kernel",
+          "destination" =>  "fe80::/64",
+          "metric" =>  "256"
+        },
+        {
+          "family" =>  "inet6",
+          "destination" =>  "default",
+          "metric" =>  "1"
+        }
+      ],
+      "type" =>  "venet",
+      "flags" =>  [
+        "BROADCAST",
+        "NOARP",
+        "UP",
+        "LOWER_UP"
+      ],
+      "mtu" =>  "1500",
+      "state" =>  "unknown"
+    }
+  }
+}
+
+      openvz_data['rhel'] = {
+  "interfaces" =>  {
+    "lo" =>  {
+      "mtu" =>  "16436",
+      "flags" =>  [
+        "LOOPBACK",
+        "UP",
+        "LOWER_UP"
+      ],
+      "encapsulation" =>  "Loopback",
+      "addresses" =>  {
+        "127.0.0.1" =>  {
+          "family" =>  "inet",
+          "prefixlen" =>  "8",
+          "netmask" =>  "255.0.0.0",
+          "scope" =>  "Node"
+        },
+        "::1" =>  {
+          "family" =>  "inet6",
+          "prefixlen" =>  "128",
+          "scope" =>  "Node"
+        }
+      },
+      "state" =>  "unknown",
+      "routes" =>  [
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        },
+        {
+          "destination" =>  "unreachable",
+          "family" =>  "inet6",
+          "metric" =>  "1024"
+        }
+      ]
+    },
+    "venet0" =>  {
+      "type" =>  "venet",
+      "number" =>  "0",
+      "mtu" =>  "1500",
+      "flags" =>  [
+        "BROADCAST",
+        "NOARP",
+        "UP",
+        "LOWER_UP"
+      ],
+      "addresses" =>  {
+        "127.0.0.1" =>  {
+          "family" =>  "inet",
+          "prefixlen" =>  "32",
+          "netmask" =>  "255.255.255.255",
+          "scope" =>  "Node"
+        },
+        "2607:f700:1:d1:3cf9:d1bd:636d:515f" =>  {
+          "family" =>  "inet6",
+          "prefixlen" =>  "128",
+          "scope" =>  "Global"
+        }
+      },
+      "state" =>  "unknown",
+      "routes" =>  [
+        {
+          "destination" =>  "169.254.0.0/16",
+          "family" =>  "inet",
+          "scope" =>  "link",
+          "metric" =>  "1002"
+        },
+        {
+          "destination" =>  "default",
+          "family" =>  "inet",
+          "scope" =>  "link"
+        },
+        {
+          "destination" =>  "2607:f700:1:d1:3cf9:d1bd:636d:515f",
+          "family" =>  "inet6",
+          "metric" =>  "256",
+          "proto" =>  "kernel"
+        },
+        {
+          "destination" =>  "fe80::/64",
+          "family" =>  "inet6",
+          "metric" =>  "256",
+          "proto" =>  "kernel"
+        },
+        {
+          "destination" =>  "default",
+          "family" =>  "inet6",
+          "metric" =>  "1"
+        }
+      ]
+    },
+    "venet0:0" =>  {
+      "addresses" =>  {
+        "67.214.220.250" =>  {
+          "family" =>  "inet",
+          "prefixlen" =>  "32",
+          "netmask" =>  "255.255.255.255",
+          "broadcast" =>  "67.214.220.250",
+          "scope" =>  "Global"
+        }
+      }
+    }
+  },
+  "default_interface" =>  "venet0",
+  "default_gateway" =>  "0.0.0.0",
+  "default_inet6_interface" =>  "venet0",
+  "default_inet6_gateway" =>  "::"
+}
+
+      openvz_data
+    end
+    describe "when in an Ubuntu guest" do
+      before(:each) do
+        @ohai["network"] = openvz_data['ubuntu']
+      end
+      it_does_not_fail
+    end
+    describe "when in an RHEL 6 guest" do
+      before(:each) do
+        @ohai["network"] = openvz_data['rhel']
+      end
+      it_does_not_fail
+      it "should not assign loopback as node.ipaddress" do
+        @ohai._require_plugin("network")
+        @ohai.ipaddress.should_not == "127.0.0.1"
+        puts @ohai.ipaddress
+      end
+    end
+  end
 end
